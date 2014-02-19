@@ -8,11 +8,12 @@
  ----------------------------------------------------------------------------*/
 import java.awt.*;
 import java.awt.event.*;
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import javax.swing.*;
 import javax.swing.Timer;
-
 import java.util.*;
+import java.io.File;;
 
 public class MinesweeperGrid extends JFrame implements ActionListener
 {
@@ -40,6 +41,15 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	private JButton restart;
 	private JLabel mineLabel;
 	
+	// Icon images
+	Icon box;
+	Icon flag;
+	Icon mine;
+	Icon questionMarkIcon;
+	
+	File topTenFile;
+	
+	
 	/**------------------------------------------------------------------------
 	 * Constructor for the Mineswepper window
 	 * ------------------------------------------------------------------------*/
@@ -49,13 +59,16 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		grid = new JPanel(new GridLayout(10, 10));
 		buttons = new JButton[100];
 		
+		box = new ImageIcon(getClass().getResource("box.png"));
+		flag = new ImageIcon(getClass().getResource("flag.png"));
+		mine = new ImageIcon(getClass().getResource("mine.png"));
+		questionMarkIcon = new ImageIcon(getClass().getResource("qm.png"));
 		
 		// Initialize each button
 		for (int i = 0; i < 100; i++)
-		{
-			buttons[i] = new JButton();
-			buttons[i].setIcon(new ImageIcon("box.png"));
-			validate();
+		{			
+			buttons[i] = new JButton(box);
+			buttons[i].setBackground(Color.WHITE);
 			grid.add(buttons[i]);
 		}
 		setMines();	// Set 10 random mines in the grid
@@ -90,6 +103,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		resetItem.addActionListener(this);
 		about.addActionListener(this);
 		helpItem.addActionListener(this);
+		topTen.addActionListener(this);
 		
 		// Set up the timer in the top bar
 		topBar = new JPanel(new BorderLayout());
@@ -118,10 +132,12 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		// Set up counter to show how many mines are left
 		mineLabel = new JLabel();
 		mineLabel.setText("Mines: " + numOfMines);
-				
+		
+		// Add all of the elements to the top bar
 		topBar.add(timerLabel, BorderLayout.CENTER);
 		topBar.add(mineLabel, BorderLayout.WEST);
 		topBar.add(restart, BorderLayout.EAST);
+		
 	} // End public MinesweeperGrid() 
 	
 	/**------------------------------------------------------------------------
@@ -151,7 +167,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		for (int i = 0; i < mines.length; i++)
 		{
 			System.out.println(random[i]);		// For debugging so you can see mine locations
-			buttons[random[i]].setText("M");	// For debugging so you can see mine locations
+			buttons[random[i]].setIcon(mine);	// For debugging so you can see mine locations
 			mines[i] = random[i];
 		}
 	} // End private void setMines()
@@ -195,7 +211,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	}
 	
 	/**------------------------------------------------------------------------
-	 * Action listeners for the menu items
+	 * Action listeners for various buttons
 	 * ------------------------------------------------------------------------*/
 	@Override	// Override inherited methods
 	public void actionPerformed(ActionEvent e) 
@@ -215,24 +231,63 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		// Action listener for Help menu item
 		if (e.getSource() == helpItem)
 		{
-			String output = "Will place rules here";
+			// Rules obtained from: http://windows.microsoft.com/en-us/windows/minesweeper-how-to#1TC=windows-7
+			String output = 
+			"How to play:\n1. Uncover a mine, and the game ends.\n"
+			+ "2. Uncover an empty square, and you keep playing.\n"
+			+ "3. Uncover a number, and it tells you how many mines lay hidden in the eight "
+			+ "surrounding squares.\n    Use this information to deduce which nearby squares are safe to click."
+			+ "\n\nIf you suspect a square conceals a mine, right-click it. This puts a flag on the square.\n"
+			+ "If you're not sure, right-click again to make it a question mark.";
+			
 			JOptionPane.showMessageDialog(null, output, "About", EXIT_ON_CLOSE);
 		}
 		
-		// Action listener for restart button for top bar
+		// Action listener for restart button and for top bar restart otption
 		if (e.getSource() == restart || e.getSource() == resetItem)
 		{
-			timeCount = 0;
+			timeCount = 0;	// Reset Timer
 			
 			// Clear out the old mines
 			for (int i=0; i<10; i++)
-			{
-				buttons[mines[i]].setText("");
+				buttons[mines[i]].setIcon(box);
+		
+			setMines();		// Set the new mines
+		}
+		
+		// Action listener for top ten in top bar - shows top ten scores
+		if (e.getSource() == topTen)
+		{
+			topTenFile = new File("topTen.txt");
+			
+			
+			File a = new File("topTen.txt");
+			
+			
+			if (a.exists())
+				System.out.println("I exist");
+			else 
+				System.out.println("Nope...");
+			
+			
+			try 
+			{ 
+				Scanner input = new Scanner(topTenFile); 
+				String line = input.nextLine();
+				int num = line.charAt(17);
+				
+				System.out.println(line + " and " + num);
+				
+				
+				input.close();
+			} 
+			catch (FileNotFoundException e1) 
+			{ 
+				System.out.println("Failed to open topTen.txt"); 
 			}
 			
-			// Set the new mines
-			setMines();
-
+			
+			
 		}
 	} // End public void actionPerformed(ActionEvent e) 
 	
