@@ -6,19 +6,22 @@
  * Created by Adam Socik
  * February 2013
  ----------------------------------------------------------------------------*/
+/*
+ * This class sets up the GUI for the entire game and contains any methods for 
+ * manipulation of the GUI.
+ */
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.util.*;
-import java.io.File;;
 
 public class MinesweeperGrid extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 1L;
-	private JPanel grid;
+	private JPanel grid;			// Contains 10 x 10 grid of buttons
 	private JPanel topBar;
 	private JButton buttons[];
 	private int mines[];			// Stores the index of mine locations in buttons[]
@@ -28,8 +31,10 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	private JMenuBar menuBar;
 	private JMenu game;
 	private JMenu help;
+	private JMenu topTen;
+	private JMenuItem viewTopTen;
+	private JMenuItem clearTopTen;
 	private JMenuItem resetItem;
-	private JMenuItem topTen;
 	private JMenuItem exit;
 	private JMenuItem helpItem;
 	private JMenuItem about;
@@ -47,49 +52,62 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	Icon mine;
 	Icon questionMarkIcon;
 	
-	File topTenFile;
+	TopTen list;	// Class that handles the top ten list
 	
-	
-	/**------------------------------------------------------------------------
-	 * Constructor for the Mineswepper window
-	 * ------------------------------------------------------------------------*/
-	public MinesweeperGrid() 
-	{			
-		// Set up the grid of 100 buttons
-		grid = new JPanel(new GridLayout(10, 10));
-		buttons = new JButton[100];
-		
+	public MinesweeperGrid() throws IOException 
+	{		
+		//---------------------------------------------------------
+		// Set up image icons
+		//---------------------------------------------------------
 		box = new ImageIcon(getClass().getResource("box.png"));
 		flag = new ImageIcon(getClass().getResource("flag.png"));
 		mine = new ImageIcon(getClass().getResource("mine.png"));
 		questionMarkIcon = new ImageIcon(getClass().getResource("qm.png"));
 		
+		//---------------------------------------------------------
+		// Set up the grid of 100 buttons
+		//---------------------------------------------------------
+		grid = new JPanel(new GridLayout(10, 10));
+		buttons = new JButton[100];
+		
 		// Initialize each button
 		for (int i = 0; i < 100; i++)
 		{			
 			buttons[i] = new JButton(box);
-			buttons[i].setBackground(Color.WHITE);
 			grid.add(buttons[i]);
 		}
 		setMines();	// Set 10 random mines in the grid
 		add(grid, BorderLayout.CENTER);	// Add Panel to the frame
 		
+		//---------------------------------------------------------
 		// Set up the menu bar
+		//---------------------------------------------------------
 		menuBar = new JMenuBar();
+		
+		// Game menu
 		game = new JMenu("Game");
-		help = new JMenu("Help");
 		resetItem = new JMenuItem("Restart");
-		topTen = new JMenuItem("Top Ten");
 		exit = new JMenuItem("Exit");
+		
+		// Help menu
+		help = new JMenu("Help");
 		helpItem = new JMenuItem("Help");
 		about = new JMenuItem("About");
-		menuBar.add(game);
-		menuBar.add(help);
+		
+		// Top ten submenu 
+		topTen = new JMenu("Top Ten");
+		viewTopTen = new JMenuItem("View List");
+		clearTopTen = new JMenuItem("Clear List");
+		
+		topTen.add(viewTopTen);
+		topTen.add(clearTopTen);
+		help.add(helpItem);
+		help.add(about);
 		game.add(resetItem);
 		game.add(topTen);
 		game.add(exit);
-		help.add(helpItem);
-		help.add(about);
+		menuBar.add(game);
+		menuBar.add(help);
 		
 		// Change some of the colors
 		game.setBackground(Color.DARK_GRAY);
@@ -103,9 +121,12 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		resetItem.addActionListener(this);
 		about.addActionListener(this);
 		helpItem.addActionListener(this);
-		topTen.addActionListener(this);
+		clearTopTen.addActionListener(this);
+		viewTopTen.addActionListener(this);
 		
+		//---------------------------------------------------------
 		// Set up the timer in the top bar
+		//---------------------------------------------------------
 		topBar = new JPanel(new BorderLayout());
 		timerLabel = new JLabel();
 		add(topBar,BorderLayout.NORTH);
@@ -125,11 +146,14 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		timer.setInitialDelay(0);
 		timer.start();
 		
-		// Set up the restart button for the top bar
+		//---------------------------------------------------------
+		// Set up the restart button and mine counter for the top bar
+		//---------------------------------------------------------
+		// Set up the restart button
 		restart = new JButton("Restart");
 		restart.addActionListener(this);
 		
-		// Set up counter to show how many mines are left
+		// Set up mine counter 
 		mineLabel = new JLabel();
 		mineLabel.setText("Mines: " + numOfMines);
 		
@@ -138,6 +162,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		topBar.add(mineLabel, BorderLayout.WEST);
 		topBar.add(restart, BorderLayout.EAST);
 		
+		list = new TopTen();		
 	} // End public MinesweeperGrid() 
 	
 	/**------------------------------------------------------------------------
@@ -175,12 +200,15 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	/**------------------------------------------------------------------------
 	 * If the game is over stop the timer, disable all buttons on the grid, and
 	 * add check if the time belongs in the top ten
+	 * 
+	 *  @throws IOException
 	 * ------------------------------------------------------------------------*/
-	public void gameover()
+	public void gameover() throws IOException
 	{
 		for (int i = 0; i < 100; i++)
 			buttons[i].setEnabled(false);
 		timer.stop();
+		list.qualifies(timeCount);
 	}
 	
 	/**------------------------------------------------------------------------
@@ -240,56 +268,47 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 			+ "\n\nIf you suspect a square conceals a mine, right-click it. This puts a flag on the square.\n"
 			+ "If you're not sure, right-click again to make it a question mark.";
 			
-			JOptionPane.showMessageDialog(null, output, "About", EXIT_ON_CLOSE);
+			JOptionPane.showMessageDialog(null, output, "Rules", EXIT_ON_CLOSE);
 		}
 		
-		// Action listener for restart button and for top bar restart otption
+		// Action listener for restart button and for top bar restart option
 		if (e.getSource() == restart || e.getSource() == resetItem)
 		{
 			timeCount = 0;	// Reset Timer
+			
+			for (int i = 0; i < 100; i++)
+				buttons[i].setEnabled(true);
+			timer.start();
 			
 			// Clear out the old mines
 			for (int i=0; i<10; i++)
 				buttons[mines[i]].setIcon(box);
 		
 			setMines();		// Set the new mines
+			
+			numOfMines = 10;
+			mineLabel.setText("Mines: " + numOfMines);	// Reset the mine counter
 		}
 		
 		// Action listener for top ten in top bar - shows top ten scores
-		if (e.getSource() == topTen)
+		if (e.getSource() == viewTopTen)
 		{
-			topTenFile = new File("topTen.txt");
-			
-			
-			File a = new File("topTen.txt");
-			
-			
-			if (a.exists())
-				System.out.println("I exist");
-			else 
-				System.out.println("Nope...");
-			
-			
+			list.view();
+		}
+		
+		if (e.getSource() == clearTopTen)
+		{
 			try 
-			{ 
-				Scanner input = new Scanner(topTenFile); 
-				String line = input.nextLine();
-				int num = line.charAt(17);
-				
-				System.out.println(line + " and " + num);
-				
-				
-				input.close();
-			} 
-			catch (FileNotFoundException e1) 
-			{ 
-				System.out.println("Failed to open topTen.txt"); 
+			{
+				list.clear();
+			} catch (FileNotFoundException e1) 
+			{
+				System.out.println("ERROR: File not found when trying to clear it");
+			} catch (IOException e1) 
+			{
+				System.out.println("ERROR: IOException when trying to clear topTen.txt");
 			}
-			
-			
-			
 		}
 	} // End public void actionPerformed(ActionEvent e) 
-	
 }
 

@@ -1,10 +1,22 @@
+/*----------------------------------------------------------------------------
+ * Mineswepper
+ *
+ * Class: CS 342 Software Design 
+ *
+ * Created by Adam Socik
+ * February 2013
+ ----------------------------------------------------------------------------*/
+/*
+ * Main creates the Jframe for the GUI 
+ */
+import java.io.IOException;
 import javax.swing.JFrame;
 
 public class Main extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 
-	public static void main(String[] args) 
+	public static void main(String[] args) throws IOException 
 	{
 		JFrame window = new MinesweeperGrid();
 		window.setTitle("Mineswepper");
