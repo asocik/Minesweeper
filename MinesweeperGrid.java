@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
- * Mineswepper
+ * Minesweeper
  *
  * Class: CS 342 Software Design 
  *
@@ -14,8 +14,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import javax.swing.*;
 import javax.swing.Timer;
+
 import java.util.*;
 
 public class MinesweeperGrid extends JFrame implements ActionListener
@@ -23,8 +25,8 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	private static final long serialVersionUID = 1L;
 	private JPanel grid;			// Contains 10 x 10 grid of buttons
 	private JPanel topBar;
-	private JButton buttons[];
-	private int mines[];			// Stores the index of mine locations in buttons[]
+	private static JButton buttons[];
+	private static int mines[];			// Stores the index of mine locations in buttons[]
 	private int numOfMines = 10;	// Number of mines not flagged - default is 10
 	
 	// Menu bar items
@@ -41,18 +43,18 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	
 	// Top Bar times
 	private JLabel timerLabel;
-	private Timer timer;
-	private int timeCount = 0; 
+	private static Timer timer;
+	private static int timeCount = 0; 
 	private JButton restart;
 	private JLabel mineLabel;
 	
 	// Icon images
-	Icon box;
-	Icon flag;
-	Icon mine;
-	Icon questionMarkIcon;
+	static Icon box;
+	static Icon flag;
+	static Icon mine;
+	static Icon questionMarkIcon;
 	
-	TopTen list;	// Class that handles the top ten list
+	static TopTen list;	// Class that handles the top ten list
 	
 	public MinesweeperGrid() throws IOException 
 	{		
@@ -68,13 +70,14 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		// Set up the grid of 100 buttons
 		//---------------------------------------------------------
 		grid = new JPanel(new GridLayout(10, 10));
-		buttons = new JButton[100];
+		setButtons(new JButton[100]);
 		
 		// Initialize each button
 		for (int i = 0; i < 100; i++)
 		{			
-			buttons[i] = new JButton(box);
-			grid.add(buttons[i]);
+			getButtons()[i] = new JButton(box);
+			getButtons()[i].addMouseListener(new ClickHandler(i));
+			grid.add(getButtons()[i]);
 		}
 		setMines();	// Set 10 random mines in the grid
 		add(grid, BorderLayout.CENTER);	// Add Panel to the frame
@@ -189,10 +192,14 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		
 		// Assign mines first 10 values in random array
 		mines = new int[10];
+		// Reset all boxes to normal
+		for( int i = 0; i < 99; i++){
+			getButtons()[i].setIcon(box);
+		}
 		for (int i = 0; i < mines.length; i++)
 		{
-			System.out.println(random[i]);		// For debugging so you can see mine locations
-			buttons[random[i]].setIcon(mine);	// For debugging so you can see mine locations
+			//System.out.println(random[i]);		// For debugging so you can see mine locations
+			getButtons()[random[i]].setIcon(mine);	// For debugging so you can see mine locations
 			mines[i] = random[i];
 		}
 	} // End private void setMines()
@@ -203,10 +210,10 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	 * 
 	 *  @throws IOException
 	 * ------------------------------------------------------------------------*/
-	public void gameover() throws IOException
+	public static void gameover() throws IOException
 	{
 		for (int i = 0; i < 100; i++)
-			buttons[i].setEnabled(false);
+			getButtons()[i].setEnabled(false);
 		timer.stop();
 		list.qualifies(timeCount);
 	}
@@ -277,12 +284,12 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 			timeCount = 0;	// Reset Timer
 			
 			for (int i = 0; i < 100; i++)
-				buttons[i].setEnabled(true);
+				getButtons()[i].setEnabled(true);
 			timer.start();
 			
 			// Clear out the old mines
 			for (int i=0; i<10; i++)
-				buttons[mines[i]].setIcon(box);
+				getButtons()[getMines()[i]].setIcon(box);
 		
 			setMines();		// Set the new mines
 			
@@ -310,5 +317,33 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 			}
 		}
 	} // End public void actionPerformed(ActionEvent e) 
+
+	/**
+	 * @return the mines
+	 */
+	public static int[] getMines() {
+		return mines;
+	}
+
+	/**
+	 * @param mines the mines to set
+	 */
+	public void setMines(int mines[]) {
+		MinesweeperGrid.mines = mines;
+	}
+
+	/**
+	 * @return the buttons
+	 */
+	public static JButton[] getButtons() {
+		return buttons;
+	}
+
+	/**
+	 * @param buttons the buttons to set
+	 */
+	public void setButtons(JButton buttons[]) {
+		MinesweeperGrid.buttons = buttons;
+	}
 }
 
