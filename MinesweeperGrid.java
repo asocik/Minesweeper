@@ -30,7 +30,9 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	private static JButton buttons[];
 	private static int mines[];			// Stores the index of mine locations in buttons[]
     private static int adjacencies[];
-	private int numOfMines = 10;	// Number of mines not flagged - default is 10
+	private static int numOfMines = 10;	// Number of mines not flagged - default is 10
+    private static int totalCleared = 0;
+    private static int startToggle = 0;
 	
 	// Menu bar items
 	private JMenuBar menuBar;
@@ -49,7 +51,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	private static Timer timer;
 	private static int timeCount = 0; 
 	private JButton restart;
-	private JLabel mineLabel;
+	private static JLabel mineLabel;
 	
 	// Icon images
 	static Icon box;
@@ -168,7 +170,6 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		
 		timer = new Timer(1000, timerAction);
 		timer.setInitialDelay(0);
-		timer.start();
 		
 		//---------------------------------------------------------
 		// Set up the restart button and mine counter for the top bar
@@ -289,6 +290,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	 * ------------------------------------------------------------------------*/
 	public static void gameover() throws IOException
 	{
+        ClickHandler.setToggle(0);
 		for (int i = 0; i < 100; i++)
 			getButtons()[i].setEnabled(false);
 		timer.stop();
@@ -298,19 +300,23 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	/**------------------------------------------------------------------------
 	 * Increment the number of flagged mines and update the GUI
 	 * ------------------------------------------------------------------------*/
-	public void incMines()
+	public static void incMines()
 	{
+        if(numOfMines != 10){
 		numOfMines++;
 		mineLabel.setText("Mines: " + numOfMines);
+        }
 	}
 	
 	/**------------------------------------------------------------------------
 	 * Decrement the number of flagged mines and update the GUI
 	 * ------------------------------------------------------------------------*/
-	public void decMines()
+	public static void decMines()
 	{
+        if(numOfMines != 0){
 		numOfMines--;
 		mineLabel.setText("Mines: " + numOfMines);
+        }
 	}
 	
 	/**------------------------------------------------------------------------
@@ -358,11 +364,12 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		// Action listener for restart button and for top bar restart option
 		if (e.getSource() == restart || e.getSource() == resetItem)
 		{
+            timer.stop();
 			timeCount = 0;	// Reset Timer
-			
+			ClickHandler.setToggle(1);
+            totalCleared = 0;
 			for (int i = 0; i < 100; i++)
 				getButtons()[i].setEnabled(true);
-			timer.start();
 			
 			// Clear out the old mines
 			for (int i=0; i<10; i++)
@@ -395,6 +402,18 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		}
 	} // End public void actionPerformed(ActionEvent e) 
 
+
+    public static void incTotalCleared()
+    {
+            totalCleared++;
+    }
+
+    public static int getTotalCleared() { return totalCleared; }
+
+    public static Timer getTimer(){
+        return timer;
+    }
+
 	/**
 	 * @return the mines
 	 */
@@ -426,5 +445,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
     public static int[] getAdjacencies() {
         return adjacencies;
     }
+
+    public static int getStartToggle() { return startToggle; }
 }
 
