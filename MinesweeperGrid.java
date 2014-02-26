@@ -10,6 +10,8 @@
  * This class sets up the GUI for the entire game and contains any methods for 
  * manipulation of the GUI.
  */
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
@@ -27,6 +29,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	private JPanel topBar;
 	private static JButton buttons[];
 	private static int mines[];			// Stores the index of mine locations in buttons[]
+    private static int adjacencies[];
 	private int numOfMines = 10;	// Number of mines not flagged - default is 10
 	
 	// Menu bar items
@@ -53,6 +56,15 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	static Icon flag;
 	static Icon mine;
 	static Icon questionMarkIcon;
+    static Icon zero;
+    static Icon one;
+    static Icon two;
+    static Icon three;
+    static Icon four;
+    static Icon five;
+    static Icon six;
+    static Icon seven;
+    static Icon eight;
 	
 	static TopTen list;	// Class that handles the top ten list
 	
@@ -65,6 +77,15 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		flag = new ImageIcon(getClass().getResource("flag.png"));
 		mine = new ImageIcon(getClass().getResource("mine.png"));
 		questionMarkIcon = new ImageIcon(getClass().getResource("qm.png"));
+        zero = new ImageIcon(getClass().getResource("zero.png"));
+        one = new ImageIcon(getClass().getResource("one.png"));
+        two = new ImageIcon(getClass().getResource("two.png"));
+        three = new ImageIcon(getClass().getResource("three.png"));
+        four= new ImageIcon(getClass().getResource("four.png"));
+        five = new ImageIcon(getClass().getResource("five.png"));
+        six = new ImageIcon(getClass().getResource("six.png"));
+        seven = new ImageIcon(getClass().getResource("seven.png"));
+        eight = new ImageIcon(getClass().getResource("eight.png"));
 		
 		//---------------------------------------------------------
 		// Set up the grid of 100 buttons
@@ -177,6 +198,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	{
 		// Create and initialize random array
 		int random[] = new int[100];
+        int numAdjacentMines = 0;
 		for (int i = 0; i < random.length; i++) 
 			random[i] = i;
 		
@@ -192,8 +214,9 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		
 		// Assign mines first 10 values in random array
 		mines = new int[10];
+        adjacencies = new int[100];
 		// Reset all boxes to normal
-		for( int i = 0; i < 99; i++){
+		for( int i = 0; i < 100; i++){
 			getButtons()[i].setIcon(box);
 		}
 		for (int i = 0; i < mines.length; i++)
@@ -202,6 +225,60 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 			getButtons()[random[i]].setIcon(mine);	// For debugging so you can see mine locations
 			mines[i] = random[i];
 		}
+        for( int i = 0; i < 100; i++){
+            for(int j = 0; j < getMines().length; j++){
+                if( i % 10 == 0 ){
+                    if( i-10 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i-9 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+1 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+10 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+11 == getMines()[j])
+                        numAdjacentMines++;
+                }else if ((i+1) % 10 == 0){
+                    if( i-11 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i-10 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i-1 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+9 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+10 == getMines()[j])
+                        numAdjacentMines++;
+                }else{
+                    if( i-11 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i-10 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i-9 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i-1 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+1 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+9 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+10 == getMines()[j])
+                        numAdjacentMines++;
+                    if( i+11 == getMines()[j])
+                        numAdjacentMines++;
+                }
+            }
+           adjacencies[i] = numAdjacentMines;
+           numAdjacentMines = 0;
+        }
+        /* for debugging adjacent mines
+        for(int i = 0; i < 100; i++){
+                if( i % 10 == 0 ){
+                    System.out.println("\n");
+                }
+                System.out.print(" " + adjacencies[i]);
+        }
+        */
 	} // End private void setMines()
 
 	/**------------------------------------------------------------------------
@@ -345,5 +422,9 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	public void setButtons(JButton buttons[]) {
 		MinesweeperGrid.buttons = buttons;
 	}
+
+    public static int[] getAdjacencies() {
+        return adjacencies;
+    }
 }
 
