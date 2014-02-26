@@ -13,7 +13,7 @@ public class ClickHandler extends MouseAdapter{
 	public void mouseClicked (MouseEvent e)
 	   {
 	    	if (SwingUtilities.isLeftMouseButton(e)){
-	    		System.out.println("Left Mouse Click at " + index);
+	    		// debugging System.out.println("Left Mouse Click at " + index);
 	    		try {
 					HandleEvents.leftClick(index);
 				} catch (IOException e1) {
@@ -21,7 +21,7 @@ public class ClickHandler extends MouseAdapter{
 				}
 	    	}
 	    	else if (SwingUtilities.isRightMouseButton(e)){
-	    		System.out.println("Right Mouse Click at " + index);
+	    		// debugging System.out.println("Right Mouse Click at " + index);
 	    		HandleEvents.rightClick(index);
 	    	}	
 	   }

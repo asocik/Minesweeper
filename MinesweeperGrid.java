@@ -73,19 +73,19 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		//---------------------------------------------------------
 		// Set up image icons
 		//---------------------------------------------------------
-		box = new ImageIcon(getClass().getResource("box.png"));
-		flag = new ImageIcon(getClass().getResource("flag.png"));
-		mine = new ImageIcon(getClass().getResource("mine.png"));
-		questionMarkIcon = new ImageIcon(getClass().getResource("qm.png"));
-        zero = new ImageIcon(getClass().getResource("zero.png"));
-        one = new ImageIcon(getClass().getResource("one.png"));
-        two = new ImageIcon(getClass().getResource("two.png"));
-        three = new ImageIcon(getClass().getResource("three.png"));
-        four= new ImageIcon(getClass().getResource("four.png"));
-        five = new ImageIcon(getClass().getResource("five.png"));
-        six = new ImageIcon(getClass().getResource("six.png"));
-        seven = new ImageIcon(getClass().getResource("seven.png"));
-        eight = new ImageIcon(getClass().getResource("eight.png"));
+		box = new ImageIcon(getClass().getResource("images/box.png"));
+		flag = new ImageIcon(getClass().getResource("images/flag.png"));
+		mine = new ImageIcon(getClass().getResource("images/mine.png"));
+		questionMarkIcon = new ImageIcon(getClass().getResource("images/qm.png"));
+        zero = new ImageIcon(getClass().getResource("images/zero.png"));
+        one = new ImageIcon(getClass().getResource("images/one.png"));
+        two = new ImageIcon(getClass().getResource("images/two.png"));
+        three = new ImageIcon(getClass().getResource("images/three.png"));
+        four= new ImageIcon(getClass().getResource("images/four.png"));
+        five = new ImageIcon(getClass().getResource("images/five.png"));
+        six = new ImageIcon(getClass().getResource("images/six.png"));
+        seven = new ImageIcon(getClass().getResource("images/seven.png"));
+        eight = new ImageIcon(getClass().getResource("images/eight.png"));
 		
 		//---------------------------------------------------------
 		// Set up the grid of 100 buttons

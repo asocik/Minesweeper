@@ -20,7 +20,7 @@ public class HandleEvents extends MinesweeperGrid {
 					gameover();
 				}
 			}
-            System.out.println("Adjacent mines: " + getAdjacencies()[index]);
+            // debugging System.out.println("Adjacent mines: " + getAdjacencies()[index]);
 
             switch(getAdjacencies()[index]){
                 case 0: getButtons()[index].setIcon(zero); break;
@@ -32,7 +32,6 @@ public class HandleEvents extends MinesweeperGrid {
                 case 6: getButtons()[index].setIcon(six); break;
                 case 7: getButtons()[index].setIcon(seven); break;
                 case 8: getButtons()[index].setIcon(eight); break;
-
             }
 		}
 	}
