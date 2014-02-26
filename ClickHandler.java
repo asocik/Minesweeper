@@ -12,8 +12,10 @@ public class ClickHandler extends MouseAdapter{
         this.activeToggle = 1;
 	}
 
-	public void mouseClicked (MouseEvent e)
-	   {
+    /**------------------------------------------------------------------------
+     * This method handles the left and right mouse clicks
+     * ------------------------------------------------------------------------*/
+	public void mouseClicked (MouseEvent e){
             if( activeToggle == 0){
                 // do nothing
             }else if (SwingUtilities.isLeftMouseButton(e)){
@@ -30,7 +32,5 @@ public class ClickHandler extends MouseAdapter{
 	    	}	
 	   }
 
-    public static void setToggle(int in){
-        activeToggle = in;
-    }
+    public static void setToggle(int in) { activeToggle = in; }
 }

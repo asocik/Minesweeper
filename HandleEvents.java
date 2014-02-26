@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.IOException;
 
 public class HandleEvents extends MinesweeperGrid {
@@ -7,7 +8,19 @@ public class HandleEvents extends MinesweeperGrid {
 	public HandleEvents(int index) throws IOException {
 		super();
 	}
-	
+
+    /**------------------------------------------------------------------------
+     * This method handles the events when the left mouse button is clicked.
+     * First it checks if the game has not yet been started, if it
+     * hasn't, the timer is started. If the tile is marked with a flag or a
+     * question mark, nothing happens. Otherwise, it checks if the tile
+     * contains a mine and ends the game if it does. If it is not a mine,
+     * then it is a tile with the numerical mine adjacency value, and the
+     * proper value is set on the tile. If it is a zero, a method is called
+     * to find all adjacent zero tiles and clear them. Finally if after
+     * left clicking, the number of total tiles cleared is 90, the game
+     * is over and the user wins.
+     * ------------------------------------------------------------------------*/
 	public static void leftClick(int index) throws IOException{
 
         if( getStartToggle() == 0){
@@ -16,15 +29,17 @@ public class HandleEvents extends MinesweeperGrid {
 		if( (getButtons()[index].getIcon() == flag) || getButtons()[index].getIcon() == questionMarkIcon){
 			// do nothing
 		}else{
-			// check if the button clicked is one of the mines
+			// check if the tile clicked is one of the mines
 			for(int i = 0; i < getMines().length; i++){
 				if( index == getMines()[i]){
-					// debugging System.out.println("Explosion!");
-					gameover();
+                    getTimer().stop();
+                    JOptionPane.showMessageDialog(null, "BOOM! You lost!", "Game Over", EXIT_ON_CLOSE);
+                    gameover();
 				}
 			}
-            // debugging System.out.println("Adjacent mines: " + getAdjacencies()[index]);
-
+            if( getButtons()[index].getIcon() == box){
+                incTotalCleared();
+            }
             switch(getAdjacencies()[index]){
                 case 0: getButtons()[index].setIcon(zero);
                         zeroChecks(index);
@@ -38,15 +53,21 @@ public class HandleEvents extends MinesweeperGrid {
                 case 7: getButtons()[index].setIcon(seven); break;
                 case 8: getButtons()[index].setIcon(eight); break;
             }
-            incTotalCleared();
-            // debugging System.out.println(getTotalCleared());
             if(getTotalCleared() == 90){
-                System.out.println("Game over.");
+                getTimer().stop();
+                JOptionPane.showMessageDialog(null, "You win!", "Game Over", EXIT_ON_CLOSE);
                 gameover();
             }
         }
 	}
-	
+
+    /**------------------------------------------------------------------------
+     * This method handles the events when the right mouse button is clicked.
+     * If the icon is the blank box, it changes it to the flag and decrements
+     * the displayed number of mines. If it is a flag, it changes it to a
+     * question mark and increments the displayed number of mines. If
+     * the icon is the question mark, it changes it back to the blank box.
+     * ------------------------------------------------------------------------*/
 	public static void rightClick(int index){
 		if( getButtons()[index].getIcon() == box){
 			getButtons()[index].setIcon(flag);
@@ -59,6 +80,11 @@ public class HandleEvents extends MinesweeperGrid {
 		}
 	}
 
+    /**------------------------------------------------------------------------
+     * This method calls various methods to check the positions around the
+     * clicked tile for other tiles able to be cleared. The tile's position
+     * on the board (far left columns, middle columns, far right column) determines which surrounding tiles will be checked.
+     * ------------------------------------------------------------------------*/
     public static void zeroChecks(int index){
         if( index % 10 == 0 ){
             checkUp(index);
@@ -84,6 +110,9 @@ public class HandleEvents extends MinesweeperGrid {
         }
     }
 
+    /**------------------------------------------------------------------------
+     * This method checks the tile position above the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkUp(int index){
         if(index-10 > -1){
             if(index < 0 || getButtons()[index-10].getIcon() == zero)
@@ -97,6 +126,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position above and left of the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkUpLeft(int index){
         if(index-11 > -1){
             if(index < 0 || getButtons()[index-11].getIcon() == zero)
@@ -110,6 +143,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position above and right of the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkUpRight(int index){
         if(index-9 > -1){
             if(index < 0 || getButtons()[index-9].getIcon() == zero)
@@ -123,6 +160,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position below the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkDown(int index){
         if(index+10 < 100){
             if(index > 99 || getButtons()[index+10].getIcon() == zero)
@@ -136,6 +177,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position to the left of the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkLeft(int index){
         if(index-1 > -1){
             if(index < 0 || getButtons()[index-1].getIcon() == zero)
@@ -149,6 +194,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position to the right of the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkRight(int index){
         if(index+1 < 100){
             if(index > 99 || getButtons()[index+1].getIcon() == zero)
@@ -162,6 +211,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position below and right of the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkDownRight(int index){
         if(index+11 < 100){
             if(index > 99 || getButtons()[index+11].getIcon() == zero)
@@ -175,6 +228,10 @@ public class HandleEvents extends MinesweeperGrid {
             }
         }
     }
+
+    /**------------------------------------------------------------------------
+     * This method checks the tile position below and left of the initial tile.
+     * ------------------------------------------------------------------------*/
     public static void checkDownLeft(int index){
         if(index+9 < 100){
             if( index > 99 || getButtons()[index+9].getIcon() == zero)
@@ -189,6 +246,11 @@ public class HandleEvents extends MinesweeperGrid {
         }
     }
 
+    /**------------------------------------------------------------------------
+     * This changes the icon of the tile based upon it's index's value in
+     * the mine adjacency array. It also increments the total number of
+     * tiles cleared.
+     * ------------------------------------------------------------------------*/
     public static void changeNumericTile(int index){
         switch(getAdjacencies()[index]){
             case 1:

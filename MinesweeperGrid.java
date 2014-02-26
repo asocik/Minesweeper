@@ -73,8 +73,8 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	public MinesweeperGrid() throws IOException 
 	{		
 		//---------------------------------------------------------
-		// Set up image icons
-		//---------------------------------------------------------
+        // Set up image icons
+        //---------------------------------------------------------
 		box = new ImageIcon(getClass().getResource("images/box.png"));
 		flag = new ImageIcon(getClass().getResource("images/flag.png"));
 		mine = new ImageIcon(getClass().getResource("images/mine.png"));
@@ -193,7 +193,8 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	/**------------------------------------------------------------------------
 	 * This method randomly sets 10 mines on the grid. Each mine location has to
 	 * be unique so the method creates and initializes an array of size 100,
-	 * randomly shuffles the array, and the picks the first 10 values for mines. 
+	 * randomly shuffles the array, and the picks the first 10 values for mines.
+     * It also creates an array of the number of adjacent mines for each tile.
 	 * ------------------------------------------------------------------------*/
 	private void setMines()
 	{
@@ -226,6 +227,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 			getButtons()[random[i]].setIcon(mine);	// For debugging so you can see mine locations
 			mines[i] = random[i];
 		}
+        // create array of number of adjacent bombs
         for( int i = 0; i < 100; i++){
             for(int j = 0; j < getMines().length; j++){
                 if( i % 10 == 0 ){
@@ -272,14 +274,6 @@ public class MinesweeperGrid extends JFrame implements ActionListener
            adjacencies[i] = numAdjacentMines;
            numAdjacentMines = 0;
         }
-        /* for debugging adjacent mines
-        for(int i = 0; i < 100; i++){
-                if( i % 10 == 0 ){
-                    System.out.println("\n");
-                }
-                System.out.print(" " + adjacencies[i]);
-        }
-        */
 	} // End private void setMines()
 
 	/**------------------------------------------------------------------------
@@ -402,50 +396,30 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		}
 	} // End public void actionPerformed(ActionEvent e) 
 
+    /**------------------------------------------------------------------------
+     * Increment the total number of tiles cleared
+     * ------------------------------------------------------------------------*/
+    public static void incTotalCleared() { totalCleared++; }
 
-    public static void incTotalCleared()
-    {
-            totalCleared++;
-    }
-
+    /**------------------------------------------------------------------------
+     * getters and setters
+     * ------------------------------------------------------------------------*/
     public static int getTotalCleared() { return totalCleared; }
-
     public static Timer getTimer(){
         return timer;
     }
-
-	/**
-	 * @return the mines
-	 */
 	public static int[] getMines() {
 		return mines;
 	}
-
-	/**
-	 * @param mines the mines to set
-	 */
-	public void setMines(int mines[]) {
-		MinesweeperGrid.mines = mines;
-	}
-
-	/**
-	 * @return the buttons
-	 */
 	public static JButton[] getButtons() {
 		return buttons;
 	}
-
-	/**
-	 * @param buttons the buttons to set
-	 */
 	public void setButtons(JButton buttons[]) {
 		MinesweeperGrid.buttons = buttons;
 	}
-
     public static int[] getAdjacencies() {
         return adjacencies;
     }
-
     public static int getStartToggle() { return startToggle; }
 }
 
