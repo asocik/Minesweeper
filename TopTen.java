@@ -91,7 +91,7 @@ public class TopTen
 		
 		// Prompt the user for their name
 		String name = JOptionPane.showInputDialog
-		("Congradulations, you made the top ten list.\nEnter your name: ");
+		("Congratulations, you made the top ten list.\nEnter your name: ");
 		
 		// If cancel was clicked just use default name
 		if (name == null || name.length() == 0)

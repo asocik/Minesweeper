@@ -223,8 +223,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		}
 		for (int i = 0; i < mines.length; i++)
 		{
-			//System.out.println(random[i]);		// For debugging so you can see mine locations
-			getButtons()[random[i]].setIcon(mine);	// For debugging so you can see mine locations
+			//getButtons()[random[i]].setIcon(mine);	// For debugging so you can see mine locations
 			mines[i] = random[i];
 		}
         // create array of number of adjacent bombs
@@ -316,7 +315,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	/**------------------------------------------------------------------------
 	 * Zero out the number of flagged mines and update the GUI
 	 * ------------------------------------------------------------------------*/
-	public void zeroMines() 
+	public static void zeroMines()
 	{
 		numOfMines = 0;
 		mineLabel.setText("Mines: " + numOfMines);

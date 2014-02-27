@@ -1,3 +1,17 @@
+/*----------------------------------------------------------------------------
+ * Minesweeper
+ *
+ * Class: CS 342 Software Design
+ *
+ * Created by Alex Schlake
+ * February 2013
+ ----------------------------------------------------------------------------*/
+/*
+ * This class captures the left and right mouse clicks and invokes different
+ * methods in the HandleEvents class depending on left or right clicks.
+ *
+ */
+
 import java.awt.event.*;
 import java.io.IOException;
 

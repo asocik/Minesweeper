@@ -1,3 +1,17 @@
+/*----------------------------------------------------------------------------
+ * Minesweeper
+ *
+ * Class: CS 342 Software Design
+ *
+ * Created by Alex Schlake
+ * February 2013
+ ----------------------------------------------------------------------------*/
+/*
+ * This class handles the left and right mouse click events, as well as the
+ * recursive zero tile checking.
+ *
+ */
+
 import javax.swing.*;
 import java.io.IOException;
 
@@ -33,6 +47,11 @@ public class HandleEvents extends MinesweeperGrid {
 			for(int i = 0; i < getMines().length; i++){
 				if( index == getMines()[i]){
                     getTimer().stop();
+                    for (int j = 0; j < getMines().length; j++)
+                    {
+                        getButtons()[getMines()[j]].setIcon(flag);
+                    }
+                    zeroMines();
                     JOptionPane.showMessageDialog(null, "BOOM! You lost!", "Game Over", EXIT_ON_CLOSE);
                     gameover();
 				}
@@ -55,6 +74,11 @@ public class HandleEvents extends MinesweeperGrid {
             }
             if(getTotalCleared() == 90){
                 getTimer().stop();
+                for (int i = 0; i < getMines().length; i++)
+                {
+                    getButtons()[getMines()[i]].setIcon(flag);
+                }
+                zeroMines();
                 JOptionPane.showMessageDialog(null, "You win!", "Game Over", EXIT_ON_CLOSE);
                 gameover();
             }
