@@ -4,7 +4,7 @@
  * Class: CS 342 Software Design 
  *
  * Created by Adam Socik
- * February 2013
+ * February 2014
  ----------------------------------------------------------------------------*/
 /*
  * Main creates the Jframe for the GUI 

@@ -4,7 +4,7 @@
  * Class: CS 342 Software Design 
  *
  * Created by Adam Socik
- * February 2013
+ * February 2014
  ----------------------------------------------------------------------------*/
 /*
  * This class controls any modifications and lookups to the Ten Ten list. 
@@ -71,27 +71,29 @@ public class TopTen
 		int position = 0;
 		if (scoreList.size() != 0)	// At least one score in the list
 		{
-			// If the user score is larger than the worst top ten score then they
-			// did not qualify
-			if (userScore > Integer.parseInt(scoreList.get(scoreList.size()-1)))
-				return;
-			
-			position = scoreList.size()-1;
+			// If there are ten scores then remove the last/worst one
+			if (textList.size() == 10)
+			{
+				// If the user score is larger than the worst top ten score then they
+				// did not qualify
+				if (userScore > Integer.parseInt(scoreList.get(scoreList.size()-1)))
+					return;
+				
+				textList.remove(textList.size()-1);
+			}
+				
+			position = scoreList.size();
 			// Find out which position they qualify for
 			for (int i = scoreList.size()-1; i >= 0; i--) 
 			{
 				if (userScore < Integer.parseInt(scoreList.get(i)))
 					position = i;
 			}
-			
-			// If there are ten scores then remove the last/worst one
-			if (textList.size() == 10)
-				textList.remove(textList.size()-1);
 		}
 		
 		// Prompt the user for their name
 		String name = JOptionPane.showInputDialog
-		("Congratulations, you made the top ten list.\nEnter your name: ");
+		("Congradulations, you made the top ten list.\nEnter your name: ");
 		
 		// If cancel was clicked just use default name
 		if (name == null || name.length() == 0)
@@ -102,7 +104,7 @@ public class TopTen
 		name = name.replaceAll("[0-9]","");
 		
 		// Add the new score to the appropriate position
-		textList.add(position, name + " " + userScore);
+		textList.add(position, name + " " + (userScore-1));	// -1 to reflect what is on GUI
 		
 		// Update topTen.txt
 		PrintWriter writer = new PrintWriter("topTen.txt");

@@ -4,7 +4,7 @@
  * Class: CS 342 Software Design
  *
  * Created by Alex Schlake
- * February 2013
+ * February 2014
  ----------------------------------------------------------------------------*/
 /*
  * This class captures the left and right mouse clicks and invokes different
@@ -14,7 +14,6 @@
 
 import java.awt.event.*;
 import java.io.IOException;
-
 import javax.swing.*;
 
 public class ClickHandler extends MouseAdapter{

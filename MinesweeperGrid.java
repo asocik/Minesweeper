@@ -4,19 +4,16 @@
  * Class: CS 342 Software Design 
  *
  * Created by Adam Socik
- * February 2013
+ * February 2014
  ----------------------------------------------------------------------------*/
 /*
  * This class sets up the GUI for the entire game and contains any methods for 
  * manipulation of the GUI.
  */
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -221,11 +218,14 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		for( int i = 0; i < 100; i++){
 			getButtons()[i].setIcon(box);
 		}
+		
 		for (int i = 0; i < mines.length; i++)
 		{
+			System.out.println(random[i]);		// For debugging so you can see mine locations
 			//getButtons()[random[i]].setIcon(mine);	// For debugging so you can see mine locations
 			mines[i] = random[i];
 		}
+						
         // create array of number of adjacent bombs
         for( int i = 0; i < 100; i++){
             for(int j = 0; j < getMines().length; j++){
@@ -276,18 +276,29 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	} // End private void setMines()
 
 	/**------------------------------------------------------------------------
+	 * Shows all of the mines on the grid
+	 * ------------------------------------------------------------------------*/
+	public static void showMines()
+	{
+		for (int i = 0; i < mines.length; i++)
+			getButtons()[mines[i]].setIcon(mine);
+	}
+	
+	/**------------------------------------------------------------------------
 	 * If the game is over stop the timer, disable all buttons on the grid, and
 	 * add check if the time belongs in the top ten
 	 * 
 	 *  @throws IOException
 	 * ------------------------------------------------------------------------*/
-	public static void gameover() throws IOException
+	public static void gameover(boolean win) throws IOException
 	{
         ClickHandler.setToggle(0);
 		for (int i = 0; i < 100; i++)
 			getButtons()[i].setEnabled(false);
 		timer.stop();
-		list.qualifies(timeCount);
+		
+		if (win)
+			list.qualifies(timeCount);
 	}
 	
 	/**------------------------------------------------------------------------
@@ -315,7 +326,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 	/**------------------------------------------------------------------------
 	 * Zero out the number of flagged mines and update the GUI
 	 * ------------------------------------------------------------------------*/
-	public static void zeroMines()
+	public static void zeroMines() 
 	{
 		numOfMines = 0;
 		mineLabel.setText("Mines: " + numOfMines);
@@ -357,21 +368,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 		// Action listener for restart button and for top bar restart option
 		if (e.getSource() == restart || e.getSource() == resetItem)
 		{
-            timer.stop();
-			timeCount = 0;	// Reset Timer
-			ClickHandler.setToggle(1);
-            totalCleared = 0;
-			for (int i = 0; i < 100; i++)
-				getButtons()[i].setEnabled(true);
-			
-			// Clear out the old mines
-			for (int i=0; i<10; i++)
-				getButtons()[getMines()[i]].setIcon(box);
-		
-			setMines();		// Set the new mines
-			
-			numOfMines = 10;
-			mineLabel.setText("Mines: " + numOfMines);	// Reset the mine counter
+            new restartAction().execute();
 		}
 		
 		// Action listener for top ten in top bar - shows top ten scores
@@ -394,7 +391,7 @@ public class MinesweeperGrid extends JFrame implements ActionListener
 			}
 		}
 	} // End public void actionPerformed(ActionEvent e) 
-
+	
     /**------------------------------------------------------------------------
      * Increment the total number of tiles cleared
      * ------------------------------------------------------------------------*/
@@ -420,5 +417,41 @@ public class MinesweeperGrid extends JFrame implements ActionListener
         return adjacencies;
     }
     public static int getStartToggle() { return startToggle; }
+    
+	/**------------------------------------------------------------------------
+     * This nested class implements the actions for a restart in a separate
+     * thread - this was done because sometimes the GUI did not completely update
+     * in a single thread
+     * ------------------------------------------------------------------------*/
+    class restartAction extends SwingWorker<Integer, Integer>
+    {    	
+    	@Override
+    	protected Integer doInBackground()
+    	{
+    		timer.stop();
+			timeCount = 0;	// Reset Timer
+			
+    		ClickHandler.setToggle(1);
+            totalCleared = 0;
+			for (int i = 0; i < 100; i++)
+				getButtons()[i].setEnabled(true);
+			
+			// Clear out the old mines
+			for (int i=0; i<10; i++)
+				getButtons()[getMines()[i]].setIcon(box);
+		
+			setMines();		// Set the new mines
+			
+			numOfMines = 10;
+			mineLabel.setText("Mines: " + numOfMines);	// Reset the mine counter
+    		return 0;
+    	}
+    	
+    	@Override
+    	protected void done() 
+    	{
+    		System.out.println("Restart complete");
+    	}
+    }
 }
 
